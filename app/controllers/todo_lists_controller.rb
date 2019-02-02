@@ -1,30 +1,28 @@
 class TodoListsController < ApplicationController
-  before_action :set_todo_list, only: [:show, :edit, :update, :destroy]
+  before_action :set_todo_list, only: %i[show edit update destroy]
 
   # GET /todo_lists
   # GET /todo_lists.json
   def index
-    @todo_lists = TodoList.all
+    @todo_lists = current_user.todo_lists.paginate(page: params[:page], per_page: 8)
   end
 
   # GET /todo_lists/1
   # GET /todo_lists/1.json
-  def show
-  end
+  def show; end
 
   # GET /todo_lists/new
   def new
-    @todo_list = TodoList.new
+    @todo_list = current_user.todo_lists.new
   end
 
   # GET /todo_lists/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /todo_lists
   # POST /todo_lists.json
   def create
-    @todo_list = TodoList.new(todo_list_params)
+      @todo_list = current_user.todo_lists.new(todo_list_params)
 
     respond_to do |format|
       if @todo_list.save
@@ -62,13 +60,14 @@ class TodoListsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_todo_list
-      @todo_list = TodoList.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def todo_list_params
-      params.require(:todo_list).permit(:list_name, :list_due_date)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_todo_list
+    @todo_list = current_user.todo_lists.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def todo_list_params
+    params.require(:todo_list).permit(:list_name, :list_due_date)
+  end
 end
